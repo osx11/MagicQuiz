@@ -1,0 +1,75 @@
+{% extends "main/wrapper.html" %}
+{% block content %}
+    <div class="center" align="center">
+        <h3 id="questions_left">[Осталось: ]</h3>
+        <br>
+
+        <div id="question-wrapper">
+        </div>
+
+        <br>
+        <button class="btn btn-ms" onclick="sendForm();">Следующий вопрос</button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function() {
+            questions_left.innerText = '[Осталось: ' + questions_left_counter + ']';
+
+            // при загрузке страницы подгружаем вопрос с айди из start_stage
+            $('#question-wrapper').load('/quiz/{{ quiz_id }}/?question={{ start_stage }} #question');
+        });
+    </script>
+
+    <script>
+        // скрипт для загрузки следующего вопроса гет-методом
+
+        let question_ids = {{ question_ids }};
+        let questions_left_counter = question_ids.length;
+
+        let questions_left = document.getElementById("questions_left");
+
+        function load_next_question() {
+            question_ids.shift();
+
+            if (question_ids.length > 0) {
+                $('#question-wrapper').load('/quiz/{{ quiz_id }}/?question=' + question_ids[0] + ' #question')
+
+                questions_left_counter--;
+
+                questions_left.innerText = '[Осталось: ' + questions_left_counter + ']';
+            } else {
+                window.location = '/quiz/{{ quiz_id }}/?success'
+            }
+        }
+    </script>
+
+    <script>
+        // метод для установки айди ответа в форму
+
+        function updateForm(answer_id) {
+            document.getElementById('update_form_answer_id').value = answer_id;
+        }
+    </script>
+
+    <script>
+        // скрипт отправки формы на сервер
+
+        function sendForm() {
+            let data = $('#update_answer_form').serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: '/quiz/{{ quiz_id }}/update_answer/',
+                data: data,
+                success: load_next_question,
+                error: function() {
+                    alert('Вариант ответа не выбран или произошла ошибка');
+                }
+            })
+        }
+    </script>
+{% endblock %}

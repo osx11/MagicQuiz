@@ -1,0 +1,107 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: rgb(192,98,254);
+    /*background: radial-gradient(circle, rgba(192,98,254,1) 30%, rgba(142,124,255,1) 130%);*/
+    color: #ffffff;
+}
+
+/*.center {*/
+    /*margin:0 25% 0 25%;*/
+    /*width:50%;*/
+    /*text-align: center;*/
+/*}*/
+
+.center {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 600px;
+    max-height: 1000px;
+}
+
+.center .test {
+    text-align: left;
+}
+
+.btn-ms {
+    background-color: #8132ff;
+    border-color: #8132ff;
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.btn-ms:hover {
+    background-color: #7419ff;
+    border-color: #7419ff;
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+a {
+    color: #ffffff;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #cdcdcd;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+#question input {
+    position: relative;
+    margin-top: 9px;
+}
+
+#question label {
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+.result {
+    border-bottom: 1px #321b4a solid;
+}
+
+@media
+    only screen and (max-device-width: 1024px),
+    only screen and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2)
+{
+    h1 {
+        font-size: 3.5em;
+    }
+    h2 {
+        font-size: 3em;
+    }
+    h3 {
+        font-size: 2.5em;
+    }
+    h4  {
+        font-size: 2em;
+    }
+    h5  {
+        font-size: 2em;
+    }
+    h6 {
+        font-size: 1.5em;
+    }
+
+    .btn {
+        font-size: 1.8em;
+        padding: 12px 16px 12px 16px;
+        border-radius: 5px;
+    }
+
+    #question input {
+        position: relative;
+        transform:scale(2.0);
+    }
+
+    #question label {
+        margin-left: 15px;
+        font-size: 2em;
+    }
+}

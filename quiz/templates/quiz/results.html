@@ -1,0 +1,17 @@
+{% extends "main/wrapper.html" %}
+{% block content %}
+    <div align="center">
+        {% for question, answers in qa.items %}
+            <div class="result">
+                <br>
+
+                <h3>{{ question.question }}</h3>
+                {% for answer in answers %}
+                    <h5>{{ answer }} [{{ answer.counter }}]</h5>
+                {% endfor %}
+
+                <br>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
