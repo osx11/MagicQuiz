@@ -1,7 +1,9 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from .models import *
+from .forms import RegistrationForm
 from main.common import get_ip_address
 
 
@@ -14,20 +16,21 @@ def quiz_ready(request, quiz_id):
     if 'success' in request.GET.keys():
         return render(request, 'quiz/success.html')
 
+    quiz = Quiz.objects.get(id=quiz_id)
+    quiz_name = quiz.name
+
+    if quiz.is_expired():  # если тест просрочен
+        return render(request, 'quiz/expired.html', {'quiz_name': quiz_name, 'title': quiz_name})
+
     if 'start' in request.GET.keys():
         question_ids = [question.id for question in QuizQuestions.objects.filter(quiz_id=quiz_id)]
 
         ip_address = get_ip_address(request.META)
 
         if not CurrentlyDoing.objects.filter(ip_address=ip_address, quiz_id=quiz_id).exists():  # если еще не проходил
-            first_stage = QuizQuestions.objects.filter(quiz_id=quiz_id)[0].id
-
-            # add an ip address and the first question's id into the database
-            CurrentlyDoing(quiz_id=quiz_id,
-                           ip_address=ip_address,
-                           stage=first_stage).save()
-
-            start_stage = first_stage
+            return render(request, 'quiz/registration.html', {'quiz_id': quiz_id,
+                                                              'title': quiz_name,
+                                                              'messages': messages.get_messages(request)})
         else:
             currently_doing = CurrentlyDoing.objects.get(ip_address=ip_address, quiz_id=quiz_id)
 
@@ -39,8 +42,6 @@ def quiz_ready(request, quiz_id):
 
             # обрезать список до айди, на котором остановился пользователь
             question_ids = question_ids[question_ids.index(start_stage):]
-
-        quiz_name = Quiz.objects.get(id=quiz_id).name
 
         return render(request, 'quiz/QA.html', {'quiz_id': quiz_id,
                                                 'question_ids': question_ids,
@@ -55,9 +56,35 @@ def quiz_ready(request, quiz_id):
         return render(request, 'quiz/question.html', {'question': question,
                                                       'answers': answers})
 
-    quiz_name = Quiz.objects.get(id=quiz_id).name
-
     return render(request, 'quiz/quiz.html', {'quiz_name': quiz_name, 'title': quiz_name})
+
+
+def register(request, quiz_id):
+    """
+    что-то типа регистрации
+    """
+
+    if not request.POST:
+        return HttpResponseRedirect('/')
+
+    if Quiz.objects.get(quiz_id=quiz_id).is_expired():
+        return HttpResponseRedirect('/')
+
+    form = RegistrationForm(request.POST)
+
+    if form.is_valid():
+        nickname = request.POST['nickname']
+
+        if not CurrentlyDoing.objects.filter(quiz_id=quiz_id, nickname=nickname).exists():
+            first_stage = QuizQuestions.objects.filter(quiz_id=quiz_id)[0].id
+            CurrentlyDoing(quiz_id=quiz_id,
+                           ip_address=get_ip_address(request.META),
+                           nickname=nickname,
+                           stage=first_stage).save()
+        else:
+            messages.error(request, "Такой уже зарегистрирован на этот тест")
+
+    return HttpResponseRedirect('/quiz/%s/?start' % quiz_id)
 
 
 def update_answer(request, quiz_id):
@@ -95,19 +122,19 @@ def quiz_results(request, quiz_id):
 
 
 # def import_spells(request, quiz_id):
-    # spells = list()
-    #
-    # with open('C:/Users/osx11/Desktop/spell_names.txt', 'rb') as f:
-    #     for line in f:
-    #         spells.append(line.decode('utf-8').replace('\n', ''))
-
-    # for spell in spells:
-    #     question = 'Как часто вы используете заклинание %s?' % spell
-    #     QuizQuestions(quiz_id=quiz_id, question=question).save()
-
-    # answers = ['Часто', 'Иногда', 'Вообще не использую']
-    #
-    # for question in QuizQuestions.objects.filter(quiz_id=quiz_id):
-    #     for answer in answers:
-    #         QuestionAnswers(quiz_questions_id=question.id, answer=answer).save()
-
+#     spells = list()
+#
+#     with open('C:/Users/osx11/Desktop/spell_names.txt', 'rb') as f:
+#         for line in f:
+#             spells.append(line.decode('utf-8').replace('\n', ''))
+#
+#     for spell in spells:
+#         question = 'Как часто вы используете заклинание %s?' % spell
+#         QuizQuestions(quiz_id=quiz_id, question=question).save()
+#
+#     answers = ['Часто', 'Иногда', 'Вообще не использую']
+#
+#     for question in QuizQuestions.objects.filter(quiz_id=quiz_id):
+#         for answer in answers:
+#             QuestionAnswers(quiz_questions_id=question.id, answer=answer).save()
+#

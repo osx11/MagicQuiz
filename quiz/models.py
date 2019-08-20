@@ -2,9 +2,16 @@ from django.db import models
 
 from .exceptions.CheatDetectedException import CheatDetectedException
 
+from datetime import datetime
+
 
 class Quiz(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    expires = models.DateTimeField()
+
+    def is_expired(self):
+        time_format = '%y-%m-%d %H:%M:%S'
+        return datetime.now() > datetime.strptime(self.expires.strftime(time_format), time_format)
 
     def __str__(self):  # для корректного отображения в админке
         return self.name
@@ -59,6 +66,7 @@ class QuestionAnswers(models.Model):
 class CurrentlyDoing(models.Model):
     ip_address = models.GenericIPAddressField()
     stage = models.IntegerField(default=1)
+    nickname = models.CharField(max_length=255)
 
     quiz = models.ForeignKey(Quiz, related_name='currently_doing', on_delete=models.SET_NULL, blank=True, null=True)
 

@@ -84,6 +84,31 @@ a:hover {
     border-bottom: none;
 }
 
+.registration-form {
+    width: 450px;
+    margin-top: 20px;
+}
+
+.messages p:last-child {
+    margin-bottom: 5px;
+}
+
+.message {
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+    margin: 0;
+}
+.message-success {
+    background-color: #4da700;
+}
+.message-error {
+    background-color: #a7383a;
+}
+.message-warning {
+    background-color: #ff8a3a;
+}
+
 @media
     only screen and (max-device-width: 1024px),
     only screen and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2)
@@ -121,5 +146,10 @@ a:hover {
     #question label {
         margin-left: 15px;
         font-size: 2em;
+    }
+
+    .registration-form input {
+        transform: scale(1.5);
+        margin: 40px 0 40px 0;
     }
 }

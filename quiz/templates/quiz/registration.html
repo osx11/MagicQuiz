@@ -1,0 +1,14 @@
+{% extends "main/wrapper.html" %}
+{% block content %}
+    <div class="center" align="center">
+        <h3 style="font-weight: 900;">Регистрация</h3>
+        <h4>Введите свой ник, чтобы мы могли выдать <br>вам награду, когда опрос завершится.</h4>
+        <form class="registration-form" action="/quiz/{{ quiz_id }}/register/" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Ваш ник в игре">
+            </div>
+            <button type="submit" class="btn btn-ms">Начать прохождение</button>
+        </form>
+    </div>
+{% endblock %}
