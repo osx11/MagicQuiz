@@ -67,7 +67,7 @@ def register(request, quiz_id):
     if not request.POST:
         return HttpResponseRedirect('/')
 
-    if Quiz.objects.get(id=quiz_id).is_expired():
+    if Quiz.objects.get(id=quiz_id).is_expired():  # на всякий пожарный
         return HttpResponseRedirect('/')
 
     form = RegistrationForm(request.POST)
