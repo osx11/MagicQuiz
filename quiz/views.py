@@ -78,7 +78,8 @@ def update_answer(request, quiz_id):
 
 @login_required
 def quiz_results(request, quiz_id):
-    total_completed = CurrentlyDoing.objects.filter(quiz_id=quiz_id).count()
+    total_completed = CurrentlyDoing.objects.filter(quiz_id=quiz_id, stage=-1).count()
+    total_in_progress = CurrentlyDoing.objects.filter(quiz_id=quiz_id).exclude(stage=-1).count()
 
     questions = QuizQuestions.objects.filter(quiz_id=quiz_id)
 
@@ -88,7 +89,9 @@ def quiz_results(request, quiz_id):
         answers = QuestionAnswers.objects.filter(quiz_questions_id=question.id).order_by('-counter')
         qa[question] = answers
 
-    return render(request, 'quiz/results.html', {'total': total_completed, 'qa': qa})
+    return render(request, 'quiz/results.html', {'total_completed': total_completed,
+                                                 'total_in_progress': total_in_progress,
+                                                 'qa': qa})
 
 
 # def import_spells(request, quiz_id):

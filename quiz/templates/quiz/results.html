@@ -2,7 +2,8 @@
 {% block content %}
     <div align="center">
         <div class="result">
-            <h3>Всего человек выполнили: {{ total }}</h3>
+            <h3>Завершили: {{ total_completed }}</h3>
+            <h3>В процессе: {{ total_in_progress }}</h3>
         </div>
         {% for question, answers in qa.items %}
             <div class="result">

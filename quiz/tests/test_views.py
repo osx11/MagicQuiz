@@ -16,7 +16,7 @@ class TestViews(TestCase):
             QuizQuestions(quiz_id=self.quiz.id, question='Test Question #%s' % i).save()
 
             for j in range(1, 5):
-                QuestionAnswers(quiz_questions_id=i, answer='Test Answer #%s' % i).save()
+                QuestionAnswers(quiz_questions_id=i, answer='Test Answer #%s' % j).save()
 
         self.question_ids = [question.id for question in QuizQuestions.objects.all()]
 
