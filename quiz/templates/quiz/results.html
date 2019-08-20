@@ -1,16 +1,15 @@
 {% extends "main/wrapper.html" %}
 {% block content %}
     <div align="center">
+        <div class="result">
+            <h3>Всего человек выполнили: {{ total }}</h3>
+        </div>
         {% for question, answers in qa.items %}
             <div class="result">
-                <br>
-
                 <h3>{{ question.question }}</h3>
                 {% for answer in answers %}
                     <h5>{{ answer }} [{{ answer.counter }}]</h5>
                 {% endfor %}
-
-                <br>
             </div>
         {% endfor %}
     </div>

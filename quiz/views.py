@@ -1,9 +1,8 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
 from .models import *
-from .exceptions.CheatDetectedException import CheatDetectedException
+from main.common import get_ip_address
 
 
 def redirect_to_main(request):
@@ -69,33 +68,19 @@ def update_answer(request, quiz_id):
     if not request.POST:
         return HttpResponseRedirect('/')
 
-    currently_doing = CurrentlyDoing.objects.get(ip_address=get_ip_address(request.META), quiz_id=quiz_id)
-
     answer_id = request.POST['answer_id']
 
     answer = QuestionAnswers.objects.get(id=answer_id)
-
-    if currently_doing.stage > answer.quiz_questions_id or currently_doing.stage == -1:  # проверки на попытку накрутить
-        raise CheatDetectedException
-
-    answer.update()
-
-    questions_ids = [question.id for question in QuizQuestions.objects.filter(quiz_id=quiz_id)]
-
-    try:
-        next_question_id = questions_ids[questions_ids.index(answer.quiz_questions_id) + 1]  # получить айди след. вопр.
-    except IndexError:
-        currently_doing.update_stage(-1)  # -1 = пользователь уже прошел тест ранее
-    else:
-        currently_doing.update_stage(next_question_id)
+    answer.update(get_ip_address(request.META))
 
     return HttpResponseRedirect('/quiz/%s/' % quiz_id)
 
 
 @login_required
 def quiz_results(request, quiz_id):
+    total_completed = CurrentlyDoing.objects.filter(quiz_id=quiz_id).count()
+
     questions = QuizQuestions.objects.filter(quiz_id=quiz_id)
-    # answers = QuestionAnswers.objects.filter(quiz_questions__quiz_id=quiz_id)
 
     qa = dict()
 
@@ -103,14 +88,7 @@ def quiz_results(request, quiz_id):
         answers = QuestionAnswers.objects.filter(quiz_questions_id=question.id).order_by('-counter')
         qa[question] = answers
 
-    # for question in questions:
-    #     answers = QuestionAnswers.objects.filter(quiz_questions_id=question.id)
-
-    return render(request, 'quiz/results.html', {'qa': qa})
-
-
-def get_ip_address(request_meta):
-    return '127.0.0.1' if settings.DEBUG or settings.TEST_IN_PROGRESS else request_meta.get('HTTP_X_FORWARDED_FOR')
+    return render(request, 'quiz/results.html', {'total': total_completed, 'qa': qa})
 
 
 # def import_spells(request, quiz_id):

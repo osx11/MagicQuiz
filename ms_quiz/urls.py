@@ -3,10 +3,10 @@ from django.urls import path, include
 
 from main.views import index
 
-# from quiz.views import
+from decouple import config
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(config('ADMIN_URL'), admin.site.urls),
     path('', index),
     path('quiz/', include('quiz.urls'))
 ]
