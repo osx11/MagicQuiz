@@ -23,6 +23,7 @@ def quiz_ready(request, quiz_id):
         return render(request, 'quiz/expired.html', {'quiz_name': quiz_name, 'title': quiz_name})
 
     if 'start' in request.GET.keys():
+        # список айди всех вопросов для теста (нужно, чтобы загружать вопросы из фронтенда)
         question_ids = [question.id for question in QuizQuestions.objects.filter(quiz_id=quiz_id)]
 
         ip_address = get_ip_address(request.META)
@@ -82,7 +83,7 @@ def register(request, quiz_id):
                            nickname=nickname,
                            stage=first_stage).save()
         else:
-            messages.error(request, "Такой уже зарегистрирован на этот тест")
+            messages.error(request, "Такой ник уже зарегистрирован на этот тест")
 
     return HttpResponseRedirect('/quiz/%s/?start' % quiz_id)
 
