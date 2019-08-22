@@ -10,7 +10,7 @@ class Quiz(models.Model):
     expires = models.DateTimeField()
 
     def is_expired(self):
-        time_format = '%y-%m-%d %H:%M:%S'
+        time_format = '%Y-%m-%d %H:%M:%S'
         return datetime.now() > datetime.strptime(self.expires.strftime(time_format), time_format)
 
     def __str__(self):  # для корректного отображения в админке
@@ -42,8 +42,8 @@ class QuestionAnswers(models.Model):
 
         currently_doing = CurrentlyDoing.objects.get(ip_address=ip_address, quiz_id=quiz_id)
 
-        # проверки на попытку накрутить
-        if currently_doing.stage > self.quiz_questions_id or currently_doing.stage == -1:
+        # проверка на попытку накрутить
+        if currently_doing.stage != self.quiz_questions_id:
             raise CheatDetectedException
 
         self.counter += 1

@@ -2,13 +2,15 @@ from django.test import TestCase, Client
 
 from quiz.models import *
 from quiz.exceptions.CheatDetectedException import CheatDetectedException
+from main.common import strptime
 
 
 class TestViews(TestCase):
     def setUp(self):
         self.ip_address = '127.0.0.1'
+        self.nickname = 'test_user'
 
-        self.quiz = Quiz(name='TestQuiz')
+        self.quiz = Quiz(name='TestQuiz', expires=strptime('2100-01-01 00:00:00'))
         self.quiz.save()
 
         # в тесте будет 4 вопроса и 4 варианта ответа на каждый из них
@@ -19,6 +21,12 @@ class TestViews(TestCase):
                 QuestionAnswers(quiz_questions_id=i, answer='Test Answer #%s' % j).save()
 
         self.question_ids = [question.id for question in QuizQuestions.objects.all()]
+
+        # принудительно зарегистрируемся на тест
+        CurrentlyDoing(quiz_id=1,
+                       ip_address=self.ip_address,
+                       nickname=self.nickname,
+                       stage=1).save()
 
     def slice_questions_ids(self, index):
         """
@@ -70,7 +78,9 @@ class TestViews(TestCase):
 
         client = Client()
 
-        CurrentlyDoing(ip_address=self.ip_address, quiz_id=1, stage=-1).save()
+        cd = CurrentlyDoing.objects.get(ip_address=self.ip_address, quiz=1)
+        cd.stage = -1
+        cd.save()
 
         response = client.get('/quiz/1/?start')
 
@@ -96,11 +106,11 @@ class TestViews(TestCase):
         self.assertEquals(QuestionAnswers.objects.get(id=4).counter, 11)
 
         for i in range(25):
-            client.post('/quiz/1/update_answer/', {'csrfmiddlewaretoken': '', 'answer_id': 6})
-
             cd = CurrentlyDoing.objects.get(ip_address=self.ip_address)
             cd.stage = 2  # чтобы не попасть под проверку на читера, сбрасываем текущий этап
             cd.save()
+
+            client.post('/quiz/1/update_answer/', {'csrfmiddlewaretoken': '', 'answer_id': 6})
 
         self.assertEquals(QuestionAnswers.objects.get(id=6).counter, 25)
 
@@ -132,11 +142,10 @@ class TestViews(TestCase):
         self.assertEquals(cd.stage, 3)
 
         with self.assertRaises(CheatDetectedException):
-            for i in range(2):
-                client.post('/quiz/1/update_answer/', {'csrfmiddlewaretoken': '', 'answer_id': 9})
+            client.post('/quiz/1/update_answer/', {'csrfmiddlewaretoken': '', 'answer_id': 16})
 
         cd.refresh_from_db()
-        self.assertEquals(cd.stage, 4)
+        self.assertEquals(cd.stage, 3)
 
     def testQuizFinished(self):
         """
