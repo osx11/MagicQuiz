@@ -1,17 +1,48 @@
 {% extends "main/wrapper.html" %}
 {% block content %}
-    <div align="center">
-        <div class="result">
-            <h3>Завершили: {{ total_completed }}</h3>
-            <h3>В процессе: {{ total_in_progress }}</h3>
-        </div>
-        {% for question, answers in qa.items %}
-            <div class="result">
-                <h3>{{ question.question }}</h3>
-                {% for answer in answers %}
-                    <h5>{{ answer }} [{{ answer.counter }}]</h5>
-                {% endfor %}
-            </div>
-        {% endfor %}
+    <div class="result" align="center">
+        <select class="form-control form-control-sm" id="choose2Show" onchange="handleSelected();">
+            <option value="results">Результаты</option>
+            <option value="completed">Ники завершенных</option>
+            <option value="all">Ники незавершенных</option>
+        </select>
     </div>
+    <div id="results-wrapper" align="center">
+        <div id="results">
+            <div class="result">
+                <h3>Завершили: {{ total_completed }}</h3>
+                <h3>В процессе: {{ total_in_progress }}</h3>
+            </div>
+            {% for question, answers in qa.items %}
+                <div class="result">
+                    <h3>{{ question.question }}</h3>
+                    {% for answer in answers %}
+                        <h5>{{ answer }} [{{ answer.counter }}]</h5>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function() {
+            console.log('ready');
+        });
+    </script>
+
+    <script>
+        function handleSelected() {
+            let select = document.getElementById("choose2Show");
+            let value = select.options[select.selectedIndex].value;
+
+            if (value !== 'results') {
+                $('#results-wrapper').load('/quiz/{{ quiz_id }}/results/?players&type=' + value + ' .player-list')
+            } else {
+                $('#results-wrapper').load('/quiz/{{ quiz_id }}/results/ #results')
+            }
+        }
+    </script>
 {% endblock %}

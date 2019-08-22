@@ -36,7 +36,7 @@
             question_ids.shift();
 
             if (question_ids.length > 0) {
-                $('#question-wrapper').load('/quiz/{{ quiz_id }}/?question=' + question_ids[0] + ' #question')
+                $('#question-wrapper').load('/quiz/{{ quiz_id }}/?question=' + question_ids[0] + ' #question');
 
                 questions_left_counter--;
 

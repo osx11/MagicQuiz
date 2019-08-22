@@ -106,6 +106,18 @@ def update_answer(request, quiz_id):
 
 @login_required
 def quiz_results(request, quiz_id):
+    if request.GET:
+        if 'players' in request.GET.keys():
+            show_type = request.GET.get('type', 'all')
+
+            if show_type == 'all':
+                players = CurrentlyDoing.objects.filter(quiz_id=quiz_id)
+            else:
+                players = CurrentlyDoing.objects.filter(quiz_id=quiz_id, stage=-1)
+
+            return render(request, 'quiz/results_playerlist.html', {'players': players,
+                                                                    'title': 'Результаты опроса'})
+
     total_completed = CurrentlyDoing.objects.filter(quiz_id=quiz_id, stage=-1).count()
     total_in_progress = CurrentlyDoing.objects.filter(quiz_id=quiz_id).exclude(stage=-1).count()
 
@@ -119,7 +131,9 @@ def quiz_results(request, quiz_id):
 
     return render(request, 'quiz/results.html', {'total_completed': total_completed,
                                                  'total_in_progress': total_in_progress,
-                                                 'qa': qa})
+                                                 'qa': qa,
+                                                 'quiz_id': quiz_id,
+                                                 'title': 'Результаты опроса'})
 
 
 # def import_spells(request, quiz_id):

@@ -1,2 +1,2 @@
 # MagicQuiz
-A survey website for MagicStore
+An anonymous polls website for MagicStore

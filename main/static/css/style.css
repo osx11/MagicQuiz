@@ -84,6 +84,10 @@ a:hover {
     border-bottom: none;
 }
 
+.result select {
+    width: 200px;
+}
+
 .registration-form {
     width: 450px;
     margin-top: 20px;
@@ -107,6 +111,15 @@ a:hover {
 }
 .message-warning {
     background-color: #ff8a3a;
+}
+
+.fw900 {
+    font-weight: 900;
+}
+
+.player-list h3 {
+    padding: 13px 0 13px 0;
+    border-bottom: 1px #321b4a solid;
 }
 
 @media
@@ -151,5 +164,11 @@ a:hover {
     .registration-form input {
         transform: scale(1.5);
         margin: 40px 0 40px 0;
+    }
+
+    .result select {
+        font-size: 25px;
+        width: 300px;
+        border-radius: 5px;
     }
 }

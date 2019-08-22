@@ -1,0 +1,16 @@
+{% extends "main/wrapper.html" %}
+{% block content %}
+    <div align="center">
+        <div class="player-list">
+            <h3 class="fw900">Список игроков</h3>
+            {% if players %}
+                {% for player in players %}
+                    <h4>{{ player.nickname }}</h4>
+                    <br>
+                {% endfor %}
+            {% else %}
+                <h4>Тест еще никто не проходил</h4>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

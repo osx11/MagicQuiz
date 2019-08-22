@@ -1,7 +1,7 @@
 {% extends "main/wrapper.html" %}
 {% block content %}
     <div class="center" align="center">
-        <h3 style="font-weight: 900;">Регистрация</h3>
+        <h3 class="fw900">Регистрация</h3>
         <h4>Введите свой ник, чтобы мы могли выдать <br>вам награду, когда опрос завершится.</h4>
         <form class="registration-form" action="/quiz/{{ quiz_id }}/register/" method="post">
             {% csrf_token %}
